@@ -43,7 +43,7 @@ model Post {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   comments          Comment[]
-}
+} 
 
 model Comment {
   id                 String @id @default(auto()) @map("_id") @db.ObjectId
