@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
 import prisma from '@/libs/prismadb';
+import serverAuth from '@/libs/serverAuth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -12,6 +13,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (!userId || typeof userId !== 'string') {
       throw new Error('Invalid ID');
+    }
+
+    const { currentUser } = await serverAuth(req, res);
+
+    if (currentUser.id !== userId) {
+      return res.status(403).end();
     }
 
     const notifications = await prisma.notification.findMany({

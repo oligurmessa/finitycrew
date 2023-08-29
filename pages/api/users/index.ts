@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
 import prisma from '@/libs/prismadb';
+import { safeUserSelect } from '@/libs/safeUser';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -9,6 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const users = await prisma.user.findMany({
+      select: safeUserSelect,
       orderBy: {
         createdAt: 'desc'
       }
