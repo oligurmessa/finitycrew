@@ -1,6 +1,6 @@
 import React from 'react';
 
-import FollowBar from "@/components/layout/FollowBar"
+import OpenGroupsBar from "@/components/layout/OpenGroupsBar"
 import Sidebar from "@/components/layout/Sidebar"
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -15,10 +15,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               lg:col-span-2 
               border-x-[1px] 
               border-neutral-800
+              overflow-y-auto
           ">
             {children}
           </div>
-          <FollowBar />
+          <OpenGroupsBar />
         </div>
      </div>
     </div>

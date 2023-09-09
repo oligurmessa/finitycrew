@@ -23,38 +23,81 @@ model User {
   hashedPassword  String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-  followingIds    String[] @db.ObjectId
   hasNotification Boolean?
 
-  posts         Post[]
-  comments      Comment[]
+  ownedGroups   Group[]
+  memberships   Membership[]
+  contributions Contribution[]
+  payouts       Round[]
   notifications Notification[]
 }
 
-model Post {
+// An Equb: a fixed group of people who each put in the same amount every
+// round. Each round one member takes the whole pot, until everyone has had
+// a turn.
+model Group {
   id                 String @id @default(auto()) @map("_id") @db.ObjectId
-  body               String
+  name               String
+  description        String?
+  contributionAmount Float
+  frequency          String   // "weekly" | "biweekly" | "monthly"
+  maxMembers         Int
+  status             String   @default("open") // "open" | "active" | "completed"
+  currentRound       Int      @default(0)
+  ownerId            String   @db.ObjectId
+  startedAt          DateTime?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
-  userId             String @db.ObjectId
-  likedIds           String[] @db.ObjectId
-  image              String?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
-  comments          Comment[]
-} 
+  memberships Membership[]
+  rounds      Round[]
+}
 
-model Comment {
-  id                 String @id @default(auto()) @map("_id") @db.ObjectId
-  body               String
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-  userId             String @db.ObjectId
-  postId             String @db.ObjectId
+model Membership {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  groupId     String @db.ObjectId
+  userId      String @db.ObjectId
+  payoutOrder Int?   // set when the group starts; 1 = receives the first pot
+  joinedAt    DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+}
+
+model Round {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  groupId      String @db.ObjectId
+  number       Int
+  recipientId  String @db.ObjectId
+  dueDate      DateTime
+  status       String   @default("collecting") // "collecting" | "paid"
+  payoutAmount Float?
+  paidOutAt    DateTime?
+  createdAt    DateTime @default(now())
+
+  group     Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  recipient User  @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+
+  contributions Contribution[]
+
+  @@unique([groupId, number])
+}
+
+model Contribution {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  roundId   String @db.ObjectId
+  userId    String @db.ObjectId
+  amount    Float
+  createdAt DateTime @default(now())
+
+  round Round @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([roundId, userId])
 }
 
 model Notification {

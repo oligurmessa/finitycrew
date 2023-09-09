@@ -1,13 +1,13 @@
 import { useCallback } from "react";
-import { FaFeather } from "react-icons/fa";
-import { useRouter } from "next/router";
+import { FaPlus } from "react-icons/fa";
 
 import useLoginModal from "@/hooks/useLoginModal";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import useCreateGroupModal from "@/hooks/useCreateGroupModal";
 
 const SidebarButton = () => {
-  const router = useRouter();
   const loginModal = useLoginModal();
+  const createGroupModal = useCreateGroupModal();
   const { data: currentUser } = useCurrentUser();
 
   const onClick = useCallback(() => {
@@ -15,8 +15,8 @@ const SidebarButton = () => {
       return loginModal.onOpen();
     }
 
-    router.push('/');
-  }, [loginModal, router, currentUser]);
+    createGroupModal.onOpen();
+  }, [loginModal, createGroupModal, currentUser]);
 
   return (
     <div onClick={onClick}>
@@ -35,7 +35,7 @@ const SidebarButton = () => {
         transition 
         cursor-pointer
       ">
-        <FaFeather size={24} color="white" />
+        <FaPlus size={24} color="white" />
       </div>
       <div className="
         mt-6
@@ -57,7 +57,7 @@ const SidebarButton = () => {
             text-white 
             text-[20px]
         ">
-          Find Crew
+          New Equb
         </p>
       </div>
     </div>

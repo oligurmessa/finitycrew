@@ -15,7 +15,7 @@ const Sidebar = () => {
   const items = [
     {
       icon: BsHouseFill,
-      label: 'Home',
+      label: 'My Equbs',
       href: '/',
     },
     {
@@ -27,7 +27,7 @@ const Sidebar = () => {
     },
     {
       icon: FaUser,
-      label: 'Crew',
+      label: 'Profile',
       href: `/users/${currentUser?.id}`,
       auth: true,
     },
